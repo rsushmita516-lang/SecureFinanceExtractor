@@ -15,6 +15,24 @@ import {
 import { processExtractionJob } from "./extraction-service";
 import { resolveTenantContext } from "./tenant";
 
+function serializeTransaction(row: {
+  amount: { toString(): string } | number | string;
+  balanceAfter?: { toString(): string } | number | string | null;
+  date: Date;
+  createdAt: Date;
+  updatedAt: Date;
+  [key: string]: unknown;
+}) {
+  return {
+    ...row,
+    amount: Number(row.amount),
+    balanceAfter: row.balanceAfter != null ? Number(row.balanceAfter) : null,
+    date: row.date.toISOString(),
+    createdAt: row.createdAt.toISOString(),
+    updatedAt: row.updatedAt.toISOString()
+  };
+}
+
 type Variables = {
   session: Awaited<ReturnType<typeof getAuthSession>> | null;
 };
@@ -219,7 +237,7 @@ app.get("/api/transactions", zValidator("query", listTransactionsSchema), async 
     : null;
 
   return c.json({
-    items,
+   items: items.map(serializeTransaction),
     pageInfo: {
       nextCursor,
       hasNextPage
