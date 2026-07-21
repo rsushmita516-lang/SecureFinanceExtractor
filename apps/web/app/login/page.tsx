@@ -38,7 +38,7 @@ export default function LoginPage() {
    }
 
 
-   await ensureActiveOrganization();
+   await ensureActiveOrganization(email);
 
 
    setLoading(false);

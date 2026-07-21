@@ -48,7 +48,9 @@ export default function RegisterPage() {
        <Card>
          <CardHeader>
            <CardTitle>Create Account</CardTitle>
-           <CardDescription>Register and get your default organization automatically.</CardDescription>
+           <CardDescription>
+             Work emails join a shared company organization. Personal emails like Gmail get a private workspace.
+           </CardDescription>
          </CardHeader>
          <CardContent>
            <form className="space-y-4" onSubmit={onSubmit}>

@@ -1,6 +1,11 @@
 import { redirect } from "next/navigation";
 import { apiFetch } from "@/lib/api-client";
-import { getActiveOrganizationId, getServerSession } from "@/lib/auth-server";
+import {
+ ensureServerOrganization,
+ getActiveOrganizationId,
+ getServerSession
+} from "@/lib/auth-server";
+import { extractEmailDomain } from "@vessify/domain";
 import { ExtractorClient } from "./extractor-client";
 
 
@@ -13,7 +18,11 @@ export default async function HomePage() {
  }
 
 
- const organizationId = await getActiveOrganizationId();
+ let organizationId = await getActiveOrganizationId();
+ if (!organizationId) {
+   organizationId = await ensureServerOrganization();
+ }
+ const emailDomain = session.user.email ? extractEmailDomain(session.user.email) : null;
 
 
  const response = await apiFetch("/api/transactions?limit=20");
@@ -34,6 +43,13 @@ export default async function HomePage() {
              </h1>
              <p className="mt-2 max-w-2xl text-sm leading-relaxed text-slate-600">
                Signed in as <span className="font-medium text-slate-800">{session.user.email}</span>
+               {emailDomain ? (
+                 <>
+                   {" · "}
+                   Organization domain:{" "}
+                   <span className="font-medium text-slate-700">{emailDomain}</span>
+                 </>
+               ) : null}
                {" · "}
                Org scope:{" "}
                <span className="font-mono text-xs text-slate-500">

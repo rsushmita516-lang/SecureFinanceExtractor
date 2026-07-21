@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { apiFetch } from "@/lib/api-client";
+import { readJsonResponse } from "@/lib/read-json-response";
 import { getServerSession } from "@/lib/auth-server";
 
 
@@ -15,6 +16,11 @@ export async function GET(req: Request) {
 
 
  const response = await apiFetch(`/api/transactions${query ? `?${query}` : ""}`);
- const payload = await response.json();
+ const payload = await readJsonResponse(response);
  return NextResponse.json(payload, { status: response.status });
 }
+
+
+
+
+

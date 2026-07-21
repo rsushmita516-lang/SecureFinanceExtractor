@@ -1,8 +1,28 @@
 import { authClient } from "@/lib/auth-client";
+import { resolveOrganizationIdentity } from "@vessify/domain";
 
 
-export async function ensureActiveOrganization() {
+export async function ensureActiveOrganization(email?: string) {
  const { data: session } = await authClient.getSession();
+ const resolvedEmail = email ?? session?.user?.email;
+ const userId = session?.user?.id;
+
+
+ if (resolvedEmail && userId) {
+   const identity = resolveOrganizationIdentity(
+     resolvedEmail,
+     userId,
+     session?.user?.name ?? undefined
+   );
+   const { data: organizations } = await authClient.organization.list();
+   const matchedOrganization = organizations?.find((org) => org.slug === identity.slug);
+
+
+   if (matchedOrganization?.id) {
+     await authClient.organization.setActive({ organizationId: matchedOrganization.id });
+     return matchedOrganization.id;
+   }
+ }
 
 
  if (session?.session?.activeOrganizationId) {
@@ -13,19 +33,35 @@ export async function ensureActiveOrganization() {
  const { data: organizations } = await authClient.organization.list();
 
 
- if (!organizations?.length) {
-   return null;
+ if (organizations?.length) {
+   const organizationId = organizations[0]?.id;
+   if (organizationId) {
+     await authClient.organization.setActive({ organizationId });
+     return organizationId;
+   }
  }
 
 
- const organizationId = organizations[0]?.id;
- if (!organizationId) {
-   return null;
+ const response = await fetch("/api/auth/ensure-organization", {
+   method: "POST",
+   credentials: "include"
+ });
+
+
+ if (response.ok) {
+   const payload = (await response.json().catch(() => ({}))) as {
+     organization?: { id: string };
+   };
+
+
+   if (payload.organization?.id) {
+     await authClient.organization.setActive({ organizationId: payload.organization.id });
+     return payload.organization.id;
+   }
  }
 
 
- await authClient.organization.setActive({ organizationId });
- return organizationId;
+ return null;
 }
 
 
@@ -34,44 +70,36 @@ export async function registerWithOrganization(input: {
  email: string;
  password: string;
 }) {
- const signUpResult = await authClient.signUp.email({
-   name: input.name,
-   email: input.email,
-   password: input.password
+ const response = await fetch("/api/auth/register", {
+   method: "POST",
+   headers: {
+     "Content-Type": "application/json"
+   },
+   credentials: "include",
+   body: JSON.stringify(input)
  });
 
 
- if (signUpResult.error) {
-   return { error: signUpResult.error.message ?? "Unable to create account" };
+ const payload = (await response.json().catch(() => ({}))) as {
+   error?: string;
+   message?: string;
+ };
+
+
+ if (!response.ok) {
+   return {
+     error: payload.error ?? payload.message ?? "Unable to create account"
+   };
  }
 
 
- const userId = signUpResult.data?.user?.id;
- if (!userId) {
-   return { error: "Account created but user id was missing" };
- }
-
-
- const organizationResult = await authClient.organization.create({
-   name: `${input.name} Workspace`,
-   slug: `${userId.slice(0, 12)}-workspace`
- });
-
-
- if (organizationResult.error) {
-   return { error: organizationResult.error.message ?? "Unable to create workspace" };
- }
-
-
- const organizationId =
-   organizationResult.data?.id ??
-   (organizationResult.data as { organization?: { id?: string } } | null)?.organization?.id;
-
-
- if (organizationId) {
-   await authClient.organization.setActive({ organizationId });
- }
+ await ensureActiveOrganization(input.email);
 
 
  return { error: null };
 }
+
+
+
+
+

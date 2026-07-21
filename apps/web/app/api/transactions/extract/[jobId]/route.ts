@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { apiFetch } from "@/lib/api-client";
+import { readJsonResponse } from "@/lib/read-json-response";
 import { getServerSession } from "@/lib/auth-server";
 
 
@@ -17,13 +18,6 @@ export async function GET(
 
 
  const response = await apiFetch(`/api/transactions/extract/${jobId}`);
-
-
- if (!response.ok) {
-   return NextResponse.json({ error: "Job check failed" }, { status: response.status });
- }
-
-
- const payload = await response.json();
- return NextResponse.json(payload, { status: 200 });
+ const payload = await readJsonResponse(response);
+ return NextResponse.json(payload, { status: response.status });
 }

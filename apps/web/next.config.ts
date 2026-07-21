@@ -1,6 +1,8 @@
 import type { NextConfig } from "next";
 
+
 const nextConfig: NextConfig = {
+ transpilePackages: ["@vessify/domain"],
  async rewrites() {
    const apiBaseUrl = process.env.API_BASE_URL ?? "http://localhost:8787";
    return [
@@ -11,5 +13,6 @@ const nextConfig: NextConfig = {
    ];
  }
 };
+
 
 export default nextConfig;
