@@ -1,0 +1,35 @@
+{
+  "name": "vessify-assignment",
+  "version": "1.0.0",
+  "description": "Tiny production-realistic personal finance transaction extractor",
+  "scripts": {
+    "dev": "concurrently -n web,api \"npm run dev:web\" \"npm run dev:api\"",
+    "dev:web": "npm --workspace apps/web run dev",
+    "dev:api": "npm --workspace apps/api run dev",
+    "build": "npm run -ws build",
+    "typecheck": "npm run -ws typecheck",
+    "lint": "npm run -ws lint",
+    "test": "jest --runInBand"
+  },
+  "keywords": [
+    "nextjs",
+    "hono",
+    "better-auth",
+    "prisma",
+    "postgresql"
+  ],
+  "author": "",
+  "license": "MIT",
+  "private": true,
+  "type": "module",
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "devDependencies": {
+    "@types/jest": "^30.0.0",
+    "concurrently": "^10.0.3",
+    "jest": "^30.4.2",
+    "ts-jest": "^29.4.11"
+  }
+}
