@@ -102,14 +102,6 @@ Current test set (13):
 - organization domain helpers (6)
 
 
-## Deployment (Bonus)
-
-
-- Frontend: Vercel (apps/web)
-- Backend + DB: Railway/Render/Fly
-- Configure environment variables exactly as in `.env.example`
-
-
 ## Notes
 
 
@@ -117,4 +109,9 @@ Current test set (13):
 - `/api/auth/*` requests are proxied from Next.js to the Hono API so session cookies stay on the web origin.
 - Server components and API routes read the Better Auth session and forward cookies/bearer tokens to the Hono API.
 - API requests automatically include organization scope via `x-organization-id` from the active Better Auth organization.
+<<<<<<< HEAD
 - On register, work emails map `user@company.com` → shared organization slug `company-com`. Personal providers like Gmail always create a unique `{userId}-workspace` org for that user only.
+=======
+
+## Screenshots
+>>>>>>> c4f8119b19207e7936a37faaa7b20d22bb4b1292
