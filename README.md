@@ -3,6 +3,9 @@
 
 Tiny but production-realistic personal finance transaction extractor with Better Auth, tenant isolation, and protected user-scoped APIs.
 
+## Live Website
+https://securefinanceextractor.onrender.com/
+
 
 ## Stack
 
@@ -113,5 +116,16 @@ Current test set (13):
 - On register, work emails map `user@company.com` → shared organization slug `company-com`. Personal providers like Gmail always create a unique `{userId}-workspace` org for that user only.
 =======
 
-## Screenshots
->>>>>>> c4f8119b19207e7936a37faaa7b20d22bb4b1292
+##Screenshots
+Ledger records across the organization
+<img width="1509" height="824" alt="Screenshot 2026-07-22 at 4 02 04 AM" src="https://github.com/user-attachments/assets/706d5574-9a90-4d91-a53e-bdbed4ba5597" />
+Extraction box
+<img width="1506" height="904" alt="Screenshot 2026-07-22 at 4 02 21 AM" src="https://github.com/user-attachments/assets/8948b1be-4754-4898-ab78-2462e97bf93e" />
+Registration page
+<img width="1512" height="828" alt="Screenshot 2026-07-22 at 4 03 06 AM" src="https://github.com/user-attachments/assets/660e3916-de09-424c-b931-ee51154c9e03" />
+Password length constraints
+<img width="892" height="565" alt="Screenshot 2026-07-22 at 4 03 49 AM" src="https://github.com/user-attachments/assets/eade5262-5d7f-45db-802d-54afd169b901" />
+
+
+
+
