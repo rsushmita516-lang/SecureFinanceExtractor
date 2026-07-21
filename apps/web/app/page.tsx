@@ -1,17 +1,19 @@
 import { redirect } from "next/navigation";
-import { getServerSession } from "next-auth";
 import { apiFetch } from "@/lib/api-client";
-import { authOptions } from "@/lib/auth-options";
+import { getActiveOrganizationId, getServerSession } from "@/lib/auth-server";
 import { ExtractorClient } from "./extractor-client";
 
 
 export default async function HomePage() {
- const session = await getServerSession(authOptions);
+ const session = await getServerSession();
 
 
  if (!session?.user) {
    redirect("/login");
  }
+
+
+ const organizationId = await getActiveOrganizationId();
 
 
  const response = await apiFetch("/api/transactions?limit=20");
@@ -35,7 +37,7 @@ export default async function HomePage() {
                {" · "}
                Org scope:{" "}
                <span className="font-mono text-xs text-slate-500">
-                 {session.organizationId ?? "not set"}
+                 {organizationId ?? "not set"}
                </span>
              </p>
            </div>

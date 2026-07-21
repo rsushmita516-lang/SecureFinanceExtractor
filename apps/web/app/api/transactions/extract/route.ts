@@ -1,31 +1,24 @@
-import { NextResponse, type NextRequest } from "next/server";
-import { getToken } from "next-auth/jwt";
-import { authOptions } from "@/lib/auth-options";
+import { NextResponse } from "next/server";
+import { apiFetch } from "@/lib/api-client";
+import { getServerSession } from "@/lib/auth-server";
 
-const apiBaseUrl = process.env.API_BASE_URL ?? "http://localhost:8787";
 
-export async function POST(req: NextRequest) {
-  const token = await getToken({ req, secret: authOptions.secret });
-  const bearerToken = token?.accessToken ?? token?.authJwt;
-  const organizationId = token?.organizationId ?? "";
+export async function POST(req: Request) {
+ const session = await getServerSession();
+ if (!session?.user) {
+   return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+ }
 
-  if (!bearerToken) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  }
 
-  const body = await req.json();
+ const body = await req.json();
 
-  const response = await fetch(`${apiBaseUrl}/api/transactions/extract`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${bearerToken}`,
-      "x-organization-id": organizationId
-    },
-    body: JSON.stringify(body),
-    cache: "no-store"
-  });
 
-  const payload = await response.json();
-  return NextResponse.json(payload, { status: response.status });
+ const response = await apiFetch("/api/transactions/extract", {
+   method: "POST",
+   body: JSON.stringify(body)
+ });
+
+
+ const payload = await response.json();
+ return NextResponse.json(payload, { status: response.status });
 }

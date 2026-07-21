@@ -2,7 +2,8 @@
 
 
 import { ChangeEvent, FormEvent, useState, useEffect, useRef } from "react";
-import { signOut } from "next-auth/react";
+import { useRouter } from "next/navigation";
+import { authClient } from "@/lib/auth-client";
 import {
  ArrowDownLeft,
  ArrowUpRight,
@@ -71,6 +72,7 @@ const SAMPLE_TEMPLATES = [
 
 
 export function ExtractorClient({ initialTransactions }: Props) {
+ const router = useRouter();
  const [text, setText] = useState("");
  const [loading, setLoading] = useState(false);
  const [transactions, setTransactions] = useState<Transaction[]>(initialTransactions);
@@ -302,7 +304,11 @@ export function ExtractorClient({ initialTransactions }: Props) {
            variant="outline"
            size="sm"
            className="shrink-0 border-slate-200 bg-white/80 text-slate-600 hover:bg-white hover:text-slate-900"
-           onClick={() => signOut({ callbackUrl: "/login" })}
+           onClick={async () => {
+             await authClient.signOut();
+             router.push("/login");
+             router.refresh();
+           }}
          >
            <LogOut className="mr-1.5 h-3.5 w-3.5" />
            Sign Out

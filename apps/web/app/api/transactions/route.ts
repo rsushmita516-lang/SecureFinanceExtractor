@@ -1,26 +1,20 @@
 import { NextResponse } from "next/server";
-import { getServerSession } from "next-auth";
-import { authOptions } from "@/lib/auth-options";
+import { apiFetch } from "@/lib/api-client";
+import { getServerSession } from "@/lib/auth-server";
 
-const apiBaseUrl = process.env.API_BASE_URL ?? "http://localhost:8787";
 
 export async function GET(req: Request) {
-  const session = await getServerSession(authOptions);
-  if (!session?.accessToken) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  }
+ const session = await getServerSession();
+ if (!session?.user) {
+   return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+ }
 
-  const url = new URL(req.url);
-  const query = url.searchParams.toString();
 
-  const response = await fetch(`${apiBaseUrl}/api/transactions${query ? `?${query}` : ""}`, {
-    headers: {
-      Authorization: `Bearer ${session.accessToken}`,
-      "x-organization-id": session.organizationId ?? ""
-    },
-    cache: "no-store"
-  });
+ const url = new URL(req.url);
+ const query = url.searchParams.toString();
 
-  const payload = await response.json();
-  return NextResponse.json(payload, { status: response.status });
+
+ const response = await apiFetch(`/api/transactions${query ? `?${query}` : ""}`);
+ const payload = await response.json();
+ return NextResponse.json(payload, { status: response.status });
 }

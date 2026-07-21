@@ -1,27 +1,40 @@
-import { getServerSession } from "next-auth";
-import { authOptions } from "@/lib/auth-options";
+import { headers } from "next/headers";
+import { getActiveOrganizationId, getServerSession } from "@/lib/auth-server";
+
 
 const apiBaseUrl = process.env.API_BASE_URL ?? "http://localhost:8787";
 
+
 export async function apiFetch(path: string, init?: RequestInit) {
-  const session = await getServerSession(authOptions);
-  const token = session?.accessToken;
-  const organizationId = session?.organizationId;
+ const incomingHeaders = await headers();
+ const cookie = incomingHeaders.get("cookie");
+ const session = await getServerSession();
+ const organizationId = await getActiveOrganizationId();
+ const bearerToken = session?.session?.token;
 
-  const headers = new Headers(init?.headers);
-  headers.set("Content-Type", "application/json");
 
-  if (token) {
-    headers.set("Authorization", `Bearer ${token}`);
-  }
+ const fetchHeaders = new Headers(init?.headers);
+ fetchHeaders.set("Content-Type", "application/json");
 
-  if (organizationId) {
-    headers.set("x-organization-id", organizationId);
-  }
 
-  return fetch(`${apiBaseUrl}${path}`, {
-    ...init,
-    headers,
-    cache: "no-store"
-  });
+ if (cookie) {
+   fetchHeaders.set("cookie", cookie);
+ }
+
+
+ if (bearerToken) {
+   fetchHeaders.set("Authorization", `Bearer ${bearerToken}`);
+ }
+
+
+ if (organizationId) {
+   fetchHeaders.set("x-organization-id", organizationId);
+ }
+
+
+ return fetch(`${apiBaseUrl}${path}`, {
+   ...init,
+   headers: fetchHeaders,
+   cache: "no-store"
+ });
 }
