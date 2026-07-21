@@ -99,14 +99,6 @@ Current test set (7):
 - tenant isolation resolver behavior (2)
 
 
-## Deployment (Bonus)
-
-
-- Frontend: Vercel (apps/web)
-- Backend + DB: Railway/Render/Fly
-- Configure environment variables exactly as in `.env.example`
-
-
 ## Notes
 
 
@@ -114,3 +106,5 @@ Current test set (7):
 - `/api/auth/*` requests are proxied from Next.js to the Hono API so session cookies stay on the web origin.
 - Server components and API routes read the Better Auth session and forward cookies/bearer tokens to the Hono API.
 - API requests automatically include organization scope via `x-organization-id` from the active Better Auth organization.
+
+## Screenshots
