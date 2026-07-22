@@ -112,9 +112,7 @@ Current test set (13):
 - `/api/auth/*` requests are proxied from Next.js to the Hono API so session cookies stay on the web origin.
 - Server components and API routes read the Better Auth session and forward cookies/bearer tokens to the Hono API.
 - API requests automatically include organization scope via `x-organization-id` from the active Better Auth organization.
-<<<<<<< HEAD
 - On register, work emails map `user@company.com` → shared organization slug `company-com`. Personal providers like Gmail always create a unique `{userId}-workspace` org for that user only.
-=======
 
 ##Screenshots
 Ledger records across the organization
@@ -123,8 +121,6 @@ Extraction box
 <img width="1506" height="904" alt="Screenshot 2026-07-22 at 4 02 21 AM" src="https://github.com/user-attachments/assets/8948b1be-4754-4898-ab78-2462e97bf93e" />
 Registration page
 <img width="1512" height="828" alt="Screenshot 2026-07-22 at 4 03 06 AM" src="https://github.com/user-attachments/assets/660e3916-de09-424c-b931-ee51154c9e03" />
-Password length constraints
-<img width="892" height="565" alt="Screenshot 2026-07-22 at 4 03 49 AM" src="https://github.com/user-attachments/assets/eade5262-5d7f-45db-802d-54afd169b901" />
 
 
 
